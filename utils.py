@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import json
 import requests
+from selenium import webdriver, common
+from selenium.webdriver.common.keys import Keys
 import time
 
 #Принимает строку, возвращает число, если не может конвертировать возвращает False
@@ -24,9 +26,27 @@ def get_html(url):
     except(requests.RequestException, ValueError):
         return False
 
+#функция получает url сайта и открывает сайт через селениум 
+def get_html_selenium(url):
+    try:
+        driver = webdriver.Firefox()
+        driver.get(url)
+        result = driver.page_source
+        
+        driver.close()
+        return(result)
+    except(common.exceptions.WebDriverException):
+        return False
+
 #функция принимает на вход текст страницы и возвращает объект BeautifulSoup
 def get_soup(url):
     html_text = get_html(url)
+    if html_text:
+        return BeautifulSoup(html_text, 'html.parser')
+    return False
+
+def get_soup_selenium(url):
+    html_text = get_html_selenium(url)
     if html_text:
         return BeautifulSoup(html_text, 'html.parser')
     return False
@@ -45,3 +65,7 @@ def date_translate(date_last_updated):
 #возвращает строку с описанием разницы между двумя таймстемпами
 def calc_duration(tmstmp1, tmstmp2):
     return str((tmstmp2-tmstmp1)//60) + ' мин ' + str((tmstmp2 - tmstmp1)%60 / 100 * 60) + ' сек '
+
+
+
+

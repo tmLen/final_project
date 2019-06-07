@@ -1,6 +1,8 @@
-import local_settings
+#ресурсы с которых мы получаем данные о АЗС и топливе
+SRC = ['https://testfd.ru', 'https://fdsfs.ru', 'https://tesdsffdst.ru']
 
-# сайт SRC[0] содержит общие данные об АЗС РФ, защиты от парсинга нет
-# сайт SRC[1] содержит расширенные данные об АЗС РФ, блокирует IP в случае запроса данных без хедеров
 
-SRC = ['https://mimobaka.ru', 'https://www.benzin-price.ru']
+try:
+  from local_settings import *
+except ImportError:
+  pass

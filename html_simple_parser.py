@@ -1,10 +1,11 @@
 import time
 import datetime
 import settings
-from utils import get_soup, json_to_file, int_checker, create_region_path, date_translate
+from utils import get_soup, json_to_file, int_checker, create_region_path, date_translate, calc_duration
 
 #Функции ниже релевантны только для сайта mimobaka ¯\_(ツ)_/¯
 #Если на вход подать другой сайт, то функции надо переписать
+
 #функция получает ulr сайта и ищет на нем субъекты РФ в которых есть АЗС, возвращает словарь с данными 
 def find_regions(url):
     regions = {}
