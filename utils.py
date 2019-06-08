@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 import json
+from random import choice
 import requests
 from selenium import webdriver, common
 from selenium.webdriver.common.keys import Keys
@@ -32,7 +33,6 @@ def get_html_selenium(url):
         driver = webdriver.Firefox()
         driver.get(url)
         result = driver.page_source
-        
         driver.close()
         return(result)
     except(common.exceptions.WebDriverException):
@@ -66,6 +66,16 @@ def date_translate(date_last_updated):
 def calc_duration(tmstmp1, tmstmp2):
     return str((tmstmp2-tmstmp1)//60) + ' мин ' + str((tmstmp2 - tmstmp1)%60 / 100 * 60) + ' сек '
 
-
+#возвращает случайную проксю из списка
+def get_proxy(type):
+    with open('proxy_http_ip.txt', 'r') as fin:
+        proxy_list = [x.split(':')[0] for x in fin.readlines()]
+    if type == 'http':
+        return f"{choice(proxy_list)}:8085"
+    if type == 'socks':
+        return f"{choice(proxy_list)}:1085"
+    if type == 'ssl':
+        return f"{choice(proxy_list)}:8085"
+    return False
 
 

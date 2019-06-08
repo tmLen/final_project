@@ -5,3 +5,5 @@ data/
 __pycache__/
 geckodriver.log
 geckodriver/
+proxy_http_ip.txt
+proxy_http_ip.txt
