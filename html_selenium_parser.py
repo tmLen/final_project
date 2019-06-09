@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from random import choice
 import json
 import re
@@ -5,10 +6,10 @@ from selenium import webdriver, common
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.proxy import Proxy, ProxyType
 from urllib import request as urlrequest
-import requests
 
+import proxy
 import settings
-from utils import get_soup_selenium, json_to_file, get_proxy
+from utils import get_soup_selenium, json_to_file
 
 
 #Собираем данные о регионах с сайта. возвращает массив ссылок на страницы регионов 
@@ -25,52 +26,43 @@ def save_regions_href():
     regions_hrefs = get_regions_href(settings.SRC[1])
     json_to_file(regions_hrefs,'data/bf_regions_hrefs.json')
 
-#функция получает url сайта запускает selenium driver, кликает на ссылку и возвращает страницу на которую перешли по ссылке
-def get_html_selenium_with_click(url):
-    # try:
+def get_stations_hrefs(driver, stations):
+    pass
 
+#функция получает url сайта запускает selenium driver, кликает на ссылку и возвращает страницу на которую перешли по ссылке
+def get_stations_data(url, proxy, stations_hrefs):
+    try:
+        cur_proxy = proxy.get_active_proxy()
+    except (ValueError):
+        return False
+    try:
         #прокси для селениума
         webdriver.DesiredCapabilities.FIREFOX['proxy']={
-            "httpProxy":get_proxy('http'),
-            "ftpProxy":get_proxy('http'),
-            "sslProxy":get_proxy('ssl'),
-            # "noProxy":None,
+            "httpProxy":f"{cur_proxy}:{proxy.get_proxy_port('http')}",
+            "sslProxy":f"{cur_proxy}:{proxy.get_proxy_port('ssl')}",
             "proxyType":"MANUAL"
                     }
+        
         driver = webdriver.Firefox()
         driver.get(url)
-        driver.find_element_by_link_text('').click()
+        get_stations_hrefs(driver.find_element_by_link_text('Весь список').click(), stations_hrefs)
 
         result = driver.page_source
         driver.close()
         return(result)
-    # except(common.exceptions.WebDriverException):
-    #     return False
+    except(common.exceptions.WebDriverException):
+        proxy.ban_proxy(cur_proxy)
 
-def get_stations_href(regions):
+
+def get_stations(regions, proxy):
     stations = []
     for region in regions:
         url = f"{settings.SRC[2]}/{region}"
-        print(url)
-        # soup = get_soup_selenium(url)
-        # links = 
+        get_stations_data(url, proxy, stations)
+    return stations
 
 if __name__ == '__main__':
-
-    #прокси для requests
-    # with open('proxy_http_ip.txt', 'r') as fin:
-    #     proxy_list = [x.replace('\n', '') for x in fin.readlines()]
-    # url = 'http://www.benzin-price.ru'
-    # proxies = {'http': choice(proxy_list)}
-    # reque = requests.get(url, proxies=proxies)
-
-
-    # with open('data/bf_regions_hrefs.json', 'r') as fin:
-    #     regions_data = json.load(fin)
-    # get_stations_href(regions_data)
-
-    
-    print(get_html_selenium_with_click('https://mimobaka.ru'))
-
-    
-    
+    p = ProxiesQueue()
+    with open('data/bf_regions_hrefs.json', 'r') as fin:
+        regions_data = json.load(fin)
+    get_stations(regions_data, p)

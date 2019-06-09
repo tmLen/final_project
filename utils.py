@@ -1,10 +1,12 @@
 from bs4 import BeautifulSoup
+from datetime import datetime, timezone
 import json
 from random import choice
 import requests
 from selenium import webdriver, common
 from selenium.webdriver.common.keys import Keys
 import time
+
 
 #Принимает строку, возвращает число, если не может конвертировать возвращает False
 def int_checker(str):
@@ -78,4 +80,10 @@ def get_proxy(type):
         return f"{choice(proxy_list)}:8085"
     return False
 
+#функция возвращает текущеий таймстемп utc
+def get_current_utc_timestamp():
+    return int(datetime.utcnow().timestamp())
 
+#функция возвращает дату из таймстемпа
+def timestamp_to_date(ts):
+    return datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')
